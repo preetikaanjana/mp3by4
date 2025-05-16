@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP3by4 - Convert Web Content to Video</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+        #loading {
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MP3by4</h1>
+        <p>Convert any webpage content into a narrated video</p>
+        
+        <div class="input-group">
+            <input type="text" id="url" placeholder="Enter webpage URL" required>
+            <button onclick="processURL()">Convert to Video</button>
+        </div>
+
+        <div id="loading">
+            Processing... This may take a few minutes.
+        </div>
+
+        <div id="result">
+            <h3>Your video is ready!</h3>
+            <video id="videoPlayer" controls style="width: 100%;">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <script>
+        async function processURL() {
+            const url = document.getElementById('url').value;
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+
+            try {
+                const response = await fetch('http://localhost:5000/process_and_combine', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+                
+                if (data.videoURL) {
+                    const videoPlayer = document.getElementById('videoPlayer');
+                    videoPlayer.src = data.videoURL;
+                    document.getElementById('result').style.display = 'block';
+                } else if (data.error) {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error processing URL: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html> 
