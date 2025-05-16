@@ -1,6 +1,6 @@
-**MP3by4 - freshblues**
+**MP3by4**
 
-MP3by4 is a chrome extension (to-be) developed by 'freshblues', which converts the text content of a webpage into a well-summarised video narrated by fan-favourite sitcom stars. 
+MP3by4 is a chrome extension (to-be) developed by 'Preetika Anjana', which converts the text content of a webpage into a well-summarised video narrated by fan-favourite sitcom stars. 
 Our fictional characters read up and summarise all the page content, giving you an option to take away ready-made notes along with the video.
 
 **Implementation**
