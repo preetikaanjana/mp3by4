@@ -3,17 +3,23 @@ from bs4 import BeautifulSoup
 import pyttsx3
 import os
 import google.generativeai as genai
-from dotenv import load_dotenv
-
-load_dotenv()
-api_key = os.getenv('GEMINI_KEY')
+from config import Config
 
 def summarize_text(input_text):
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel("gemini-1.5-flash")
-    response = model.generate_content("Understand and generate a detailed narration to teach the concepts given below. Make the explanation interesting and well structured. It is not necessary to use examples, but please use them if they help explain the topic better. Teach it to high schoolers and older age groups. Emphasise on using lesser metaphors, and generate the dialogue fluently. DO NOT GENERATE POINTS.  The concept basis is:" + input_text)
-    print(response)
-    return response.text
+    try:
+        if Config.GEMINI_KEY == 'demo_key_for_testing':
+            # Fallback to a simple summary when no API key is available
+            return f"Here's a summary of the content: {input_text[:200]}... This is a demo summary since no Gemini API key was provided. Please add your GEMINI_KEY to the .env file for full AI-powered summaries."
+        
+        genai.configure(api_key=Config.GEMINI_KEY)
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content("Understand and generate a detailed narration to teach the concepts given below. Make the explanation interesting and well structured. It is not necessary to use examples, but please use them if they help explain the topic better. Teach it to high schoolers and older age groups. Emphasise on using lesser metaphors, and generate the dialogue fluently. DO NOT GENERATE POINTS.  The concept basis is:" + input_text)
+        print(response)
+        return response.text
+    except Exception as e:
+        print(f"Error in AI summarization: {e}")
+        # Fallback to simple summary
+        return f"Here's a summary of the content: {input_text[:300]}... (AI summarization failed, showing extracted text instead)"
 
 def extract_text_from_webpage(url):
     try:

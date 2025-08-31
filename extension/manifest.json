@@ -1,13 +1,37 @@
 {
   "manifest_version": 3,
-  "name": "mp3by4",
-  "version": "1.0",
-  "description": "An extension to convert webpages into fun explanatory videos.",
-  "permissions": ["activeTab", "scripting"],
+  "name": "MP3by4 - Web to Video Converter",
+  "version": "1.0.0",
+  "description": "Convert web pages into well-summarized videos with AI narration. Transform any webpage content into engaging video summaries.",
+  "permissions": [
+    "activeTab", 
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://localhost:5000/*",
+    "http://localhost:8080/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_title": "MP3by4 - Convert to Video",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
   }
 }
