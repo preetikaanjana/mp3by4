@@ -1,113 +1,218 @@
 document.addEventListener('DOMContentLoaded', () => {
     const extractBtn = document.getElementById("extractBtn");
-    const resultDiv = document.getElementById("result");
     const btnText = document.getElementById("btnText");
     const btnLoading = document.getElementById("btnLoading");
+    const statusBox = document.getElementById("statusBox");
+    const resultBox = document.getElementById("resultBox");
+    
+    const videoContainer = document.getElementById("videoContainer");
+    const notesContent = document.getElementById("notesContent");
+    const scriptContent = document.getElementById("scriptContent");
+    const summaryLengthSelect = document.getElementById("summaryLength");
 
-    // 1. Text Extraction Logic
-    function getPageContent() {
-        // Remove junk
-        document.querySelectorAll('script, style, nav, footer, aside').forEach(e => e.remove());
-        // Get paragraphs and headers
-        let text = "";
-        document.querySelectorAll('p, h1, h2, h3').forEach(el => {
-            if (el.innerText.length > 30) text += el.innerText + "\n";
+    // Hold the parsed notes text globally for copy functionality
+    let currentNotes = [];
+
+    // --- TAB SWITCHING LOGIC ---
+    window.switchTab = (tabName) => {
+        // Toggle tab button active state
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
         });
-        return text.slice(0, 5000); // Limit length
-    }
+        const activeBtn = document.getElementById(`btnTab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+        if (activeBtn) activeBtn.classList.add('active');
 
-    // 2. Helper to create UI elements
+        // Toggle pane visibility
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('active');
+        });
+        const activePane = document.getElementById(`pane${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+        if (activePane) activePane.classList.add('active');
+    };
+
+    // --- CHARACTER PILL SELECTION LOGIC ---
+    window.selectPill = (charName) => {
+        // Remove selected class from all pills
+        document.querySelectorAll('.character-pill').forEach(pill => {
+            pill.classList.remove('selected');
+        });
+
+        // Add selected class to the clicked pill
+        if (charName === 'girl') {
+            document.getElementById('pillRachel').classList.add('selected');
+            document.getElementById('charRachel').checked = true;
+        } else if (charName === 'robot') {
+            document.getElementById('pillSheldon').classList.add('selected');
+            document.getElementById('charSheldon').checked = true;
+        } else if (charName === 'news_anchor') {
+            document.getElementById('pillMichael').classList.add('selected');
+            document.getElementById('charMichael').checked = true;
+        }
+    };
+
+    // Bind click event listeners dynamically to satisfy Chrome Extension CSP
+    document.getElementById('pillRachel').addEventListener('click', () => window.selectPill('girl'));
+    document.getElementById('pillSheldon').addEventListener('click', () => window.selectPill('robot'));
+    document.getElementById('pillMichael').addEventListener('click', () => window.selectPill('news_anchor'));
+
+    document.getElementById('btnTabVideo').addEventListener('click', () => window.switchTab('video'));
+    document.getElementById('btnTabNotes').addEventListener('click', () => window.switchTab('notes'));
+    document.getElementById('btnTabScript').addEventListener('click', () => window.switchTab('script'));
+
+    // --- STATUS INJECTOR ---
     function addStatus(msg, type) {
+        statusBox.innerHTML = ""; // Clear existing status
         const div = document.createElement("div");
-        div.className = `status ${type}`;
+        div.className = `status-msg ${type}`;
         div.innerText = msg;
-        resultDiv.appendChild(div);
+        statusBox.appendChild(div);
     }
 
-    // 3. Main Click Handler
+    // --- WEB SCRAPER ---
+    function getPageContent() {
+        // Remove junk elements to clean input text
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelectorAll('script, style, nav, footer, aside, iframe, noscript').forEach(e => e.remove());
+        
+        let text = "";
+        clone.querySelectorAll('p, h1, h2, h3, article').forEach(el => {
+            const t = el.innerText.trim();
+            if (t.length > 25) text += t + "\n";
+        });
+        return text.slice(0, 6000); // Send up to 6000 characters
+    }
+
+    // --- CONVERT BUTTON EVENT ---
     extractBtn.addEventListener("click", async () => {
-        // Reset UI
-        resultDiv.innerHTML = "";
+        // Reset UI States
+        statusBox.innerHTML = "";
+        resultBox.style.display = "none";
+        videoContainer.innerHTML = "";
+        notesContent.innerHTML = "";
+        scriptContent.innerText = "";
+        
         btnText.style.display = "none";
         btnLoading.style.display = "inline-block";
         extractBtn.disabled = true;
 
         try {
-            // Get Tab
-            let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-            // Run Script
-            const results = await chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                func: getPageContent
-            });
-
-            if (!results || !results[0] || !results[0].result) {
-                throw new Error("No text found on page.");
+            // 1. Fetch current tab
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            if (!tab) {
+                throw new Error("No active tab found. Open a webpage first!");
             }
 
-            const pageText = results[0].result;
-            addStatus("🧠 Reading page...", "info");
+            addStatus("🕵️‍♂️ Scraping webpage content...", "info");
 
-            // --- THE FIX: Use 127.0.0.1 instead of localhost ---
-            console.log("Attempting to connect to server...");
+            // 2. Execute scraping script in active tab
+            let pageText = "";
+            try {
+                const results = await chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    func: getPageContent
+                });
+                pageText = results[0]?.result || "";
+            } catch (scrErr) {
+                console.warn("Could not scrape page dynamically:", scrErr);
+            }
+
+            // Fallback: If scraper fails, the backend server will attempt to scrape the URL directly
+            if (!pageText && !tab.url) {
+                throw new Error("Could not extract page content and no valid URL was found.");
+            }
+
+            // 3. Gather user parameters
+            const selectedCharacter = document.querySelector('input[name="character"]:checked')?.value || 'girl';
+            const selectedLength = summaryLengthSelect.value || 'medium';
+
+            const charLabel = selectedCharacter === 'robot' ? 'Sheldon Cooper' : 
+                              selectedCharacter === 'news_anchor' ? 'Michael Scott' : 'Rachel Green';
+
+            addStatus(`🎭 Sending to ${charLabel}...`, "info");
+
+            // 4. Fire POST request to Flask Backend
             const response = await fetch('http://127.0.0.1:8080/process', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: pageText, url: tab.url })
+                body: JSON.stringify({
+                    content: pageText,
+                    url: tab.url,
+                    character_name: selectedCharacter,
+                    summary_length: selectedLength
+                })
             });
 
-            console.log("Server response received:", response.status);
-
             if (!response.ok) {
-                // If the server replies with an error, get the text
-                const errorText = await response.text();
-                throw new Error(`Server Error (${response.status}): ${errorText}`);
+                const errText = await response.text();
+                throw new Error(`Server Error: ${errText || response.statusText}`);
             }
 
             const data = await response.json();
-
-            // Success! Build the UI
-            resultDiv.innerHTML = ""; // Clear status
             
-            // Create Video Box (only if video URL exists)
+            // 5. Build and Populate UI
+            addStatus("✅ Generation completed!", "success");
+
+            // Populating Video Tab
             if (data.video_url) {
-                const videoBox = document.createElement("div");
-                videoBox.className = "media-controls";
-                videoBox.innerHTML = `
-                    <h4>🎬 Your Video Summary</h4>
-                    <video controls autoplay width="100%" style="border-radius:8px; margin-top:5px;">
+                videoContainer.innerHTML = `
+                    <video id="resultVideo" controls autoplay>
                         <source src="${data.video_url}?t=${Date.now()}" type="video/mp4">
                     </video>
                 `;
-                resultDiv.appendChild(videoBox);
             } else {
-                addStatus("⚠️ Video generation completed but file not available", "info");
+                videoContainer.innerHTML = `<p style="font-size:11px;color:var(--text-gray);">Video summary file is unavailable.</p>`;
             }
 
-            // Create Script Box
-            const scriptBox = document.createElement("div");
-            scriptBox.className = "notes-container";
-            scriptBox.innerHTML = `
-                <h4>📝 AI Script Used:</h4>
-                <div class="notes-content">${data.script}</div>
-            `;
-            resultDiv.appendChild(scriptBox);
+            // Populating Notes Tab
+            if (data.notes && data.notes.length > 0) {
+                currentNotes = data.notes;
+                let notesHtml = "<ul>";
+                data.notes.forEach(note => {
+                    notesHtml += `<li>${note}</li>`;
+                });
+                notesHtml += "</ul>";
+                notesContent.innerHTML = notesHtml;
+            } else {
+                notesContent.innerHTML = "<p>No bullet notes generated.</p>";
+            }
 
-            addStatus("✅ Done!", "success");
+            // Populating Script Tab
+            scriptContent.innerText = data.script || "No script generated.";
+
+            // Show container & default to Video Tab
+            resultBox.style.display = "block";
+            window.switchTab('video');
 
         } catch (err) {
-            console.error("Full Error Details:", err);
-            // Show the EXACT error on screen
-            addStatus("❌ " + err.message, "error");
-            
+            console.error("Popup Error:", err);
+            addStatus(`❌ ${err.message}`, "error");
             if (err.message.includes("Failed to fetch")) {
-                 addStatus("💡 Hint: The Extension cannot find the Server. Ensure the black Python window is open.", "info");
+                const hint = document.createElement("div");
+                hint.className = "status-msg info";
+                hint.style.marginTop = "5px";
+                hint.innerText = "💡 Tip: Make sure the black Python server window is running on your computer.";
+                statusBox.appendChild(hint);
             }
         } finally {
             btnText.style.display = "inline";
             btnLoading.style.display = "none";
             extractBtn.disabled = false;
         }
+    });
+
+    // --- COPY NOTES ---
+    document.getElementById("copyNotesBtn").addEventListener("click", () => {
+        if (currentNotes.length === 0) return;
+        const textToCopy = currentNotes.map(n => '• ' + n).join('\n');
+        navigator.clipboard.writeText("MP3by4 Sitcom Notes:\n" + textToCopy).then(() => {
+            const copyBtn = document.getElementById("copyNotesBtn");
+            const originalText = copyBtn.innerText;
+            copyBtn.innerText = "Notes Copied! ✓";
+            copyBtn.style.background = "#4e9f90";
+            setTimeout(() => {
+                copyBtn.innerText = originalText;
+                copyBtn.style.background = "var(--pastel-green)";
+            }, 1500);
+        });
     });
 });

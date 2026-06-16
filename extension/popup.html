@@ -3,94 +3,185 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MP3by4 - Web to Video Converter</title>
+  <title>MP3by4 - Sitcom Web Summarizer</title>
   <style>
-    /* Body Styling */
-    body { 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 20px; 
-      text-align: center; 
-      color: #333;
-      min-width: 350px;
-      margin: 0;
+    :root {
+      --bg-cream: #faf8f5;
+      --bg-lavender: #f2edf9;
+      --pastel-purple: #a698e6;
+      --pastel-purple-hover: #9384db;
+      --pastel-purple-light: #ece9f7;
+      --pastel-green: #74bdae;
+      --pastel-green-hover: #63a89a;
+      --pastel-green-light: #eef9f7;
+      --pastel-peach: #fcd8cb;
+      --text-dark: #423d4c;
+      --text-gray: #7d7788;
+      --border-radius: 12px;
+      --card-shadow: 0 6px 20px rgba(166, 152, 230, 0.1);
     }
 
-    /* Header Styling */
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+      padding: 15px;
+      margin: 0;
+      width: 360px;
+      box-sizing: border-box;
+    }
+
+    /* Header */
     .header {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      background: var(--bg-lavender);
+      border-radius: var(--border-radius);
+      padding: 12px;
+      text-align: center;
+      margin-bottom: 12px;
+      border: 1px solid rgba(166, 152, 230, 0.15);
     }
 
-    h1 { 
-      font-size: 24px; 
-      color: #2c3e50; 
-      margin: 0 0 10px 0;
-      font-weight: 600;
+    .header h1 {
+      font-size: 20px;
+      margin: 0 0 4px 0;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .subtitle {
-      color: #7f8c8d;
-      font-size: 14px;
+    .header p {
+      font-size: 11px;
+      color: var(--text-gray);
       margin: 0;
+      font-weight: 500;
     }
 
-    /* Button Styling */
-    #extractBtn { 
-      background: linear-gradient(45deg, #3498db, #2980b9);
-      border: none; 
-      color: white; 
-      padding: 15px 30px; 
-      font-size: 16px; 
-      border-radius: 25px; 
-      cursor: pointer; 
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    /* Form Section */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-gray);
+      margin: 8px 0 6px 0;
+      text-align: left;
+    }
+
+    /* Horizontal Character Select Pills */
+    .character-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .character-pill {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px;
+      background: white;
+      border: 2px solid #eaeaea;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 11px;
       font-weight: 600;
+    }
+
+    .character-pill:hover {
+      border-color: var(--pastel-purple-light);
+      background: var(--bg-cream);
+    }
+
+    .character-pill.selected {
+      border-color: var(--pastel-purple);
+      background: var(--pastel-purple-light);
+      color: var(--text-dark);
+    }
+
+    .character-pill .avatar {
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+
+    /* Options block */
+    .options-grid {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      background: white;
+      padding: 8px 10px;
+      border-radius: var(--border-radius);
+      border: 1px solid #eaeaea;
+    }
+
+    .options-grid label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-gray);
+    }
+
+    .options-grid select {
+      flex: 1;
+      font-size: 11px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      outline: none;
+      background: white;
+      cursor: pointer;
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    /* Convert Button */
+    .btn-convert {
       width: 100%;
-      margin-bottom: 20px;
+      background: var(--pastel-purple);
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(166, 152, 230, 0.2);
     }
 
-    /* Button Hover Effect */
-    #extractBtn:hover { 
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    .btn-convert:hover {
+      background: var(--pastel-purple-hover);
+      transform: translateY(-1px);
     }
 
-    #extractBtn:disabled {
-      background: #bdc3c7;
+    .btn-convert:active {
+      transform: translateY(0);
+    }
+
+    .btn-convert:disabled {
+      background: #ccc;
+      box-shadow: none;
       cursor: not-allowed;
       transform: none;
-      box-shadow: none;
     }
 
-    /* Result Box Styling */
-    #result { 
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      text-align: left;
-      max-height: 400px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    /* Loading Animation */
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #3498db;
+    /* Loading Spinner */
+    .loading-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top: 2px solid white;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-right: 10px;
+      animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin {
@@ -98,191 +189,230 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* Status Messages */
-    .status {
-      padding: 10px;
-      border-radius: 8px;
-      margin: 10px 0;
+    /* Status Display */
+    .status-container {
+      margin-top: 10px;
+    }
+
+    .status-msg {
+      font-size: 11px;
       font-weight: 500;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin: 5px 0;
+      text-align: left;
     }
 
-    .status.success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+    .status-msg.info {
+      background: #eef3fc;
+      color: #3b5998;
+      border: 1px solid #dbe5f9;
     }
 
-    .status.error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+    .status-msg.error {
+      background: #fdf2f2;
+      color: #b82c2c;
+      border: 1px solid #fbdad6;
     }
 
-    .status.info {
-      background: #d1ecf1;
-      color: #0c5460;
-      border: 1px solid #bee5eb;
+    .status-msg.success {
+      background: var(--pastel-green-light);
+      color: #387c6f;
+      border: 1px solid rgba(116, 189, 174, 0.3);
     }
 
-    /* Audio/Video Controls */
-    .media-controls {
-      margin-top: 15px;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 10px;
-      border: 1px solid #e9ecef;
+    /* Tabbed Result Section */
+    .result-container {
+      margin-top: 12px;
+      background: white;
+      border-radius: var(--border-radius);
+      border: 1px solid #eaeaea;
+      padding: 10px;
+      box-shadow: var(--card-shadow);
+      display: none;
     }
 
-    .media-controls audio,
-    .media-controls video {
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 6px 2px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-gray);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      background: #f7f7f7;
+      color: var(--text-dark);
+    }
+
+    .tab-btn.active {
+      background: var(--pastel-purple-light);
+      color: var(--pastel-purple);
+    }
+
+    .tab-pane {
+      display: none;
+      min-height: 180px;
+      max-height: 220px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Pane Media Player */
+    .video-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .video-wrapper video {
       width: 100%;
       border-radius: 8px;
+      background: #000;
+      max-height: 170px;
     }
 
-    .media-controls h4 {
-        margin: 0 0 10px 0;
-        color: #333;
-    }
-    
-    .voice-selector {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 15px 0;
-    }
-    
-    .voice-selector h4 {
-        margin: 0 0 15px 0;
-        color: #333;
-        font-size: 16px;
-    }
-    
-    .voice-options {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .voice-option {
-        display: flex;
-        align-items: center;
-        padding: 8px 12px;
-        border: 1px solid #dee2e6;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .voice-option:hover {
-        background: #e9ecef;
-        border-color: #adb5bd;
-    }
-    
-    .voice-option input[type="radio"] {
-        margin-right: 10px;
-    }
-    
-    .voice-label {
-        font-size: 14px;
-        color: #495057;
-    }
-    
-    .notes-container {
-        background: #fff3cd;
-        border: 1px solid #ffeaa7;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 15px 0;
-    }
-    
-    .notes-container h4 {
-        margin: 0 0 10px 0;
-        color: #856404;
-        font-size: 16px;
-    }
-    
-    .notes-content {
-        background: white;
-        border: 1px solid #ffeaa7;
-        border-radius: 6px;
-        padding: 12px;
-        margin-bottom: 10px;
-        font-size: 14px;
-        line-height: 1.5;
-        color: #495057;
-        max-height: 200px;
-        overflow-y: auto;
-    }
-    
-    .copy-notes-btn {
-        background: #28a745;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background 0.2s ease;
-    }
-    
-    .copy-notes-btn:hover {
-        background: #218838;
-    }
-    
-    .voice-info {
-        background: #d1ecf1;
-        border: 1px solid #bee5eb;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 15px 0;
-    }
-    
-    .voice-info h4 {
-        margin: 0 0 10px 0;
-        color: #0c5460;
-        font-size: 16px;
-    }
-    
-    .voice-info ul {
-        margin: 0;
-        padding-left: 20px;
-    }
-    
-    .voice-info li {
-        margin: 5px 0;
-        color: #0c5460;
-        font-size: 14px;
+    /* Pane Notes & Script styling */
+    .pane-content {
+      font-size: 11px;
+      line-height: 1.5;
+      color: var(--text-dark);
+      white-space: pre-wrap;
     }
 
-    /* Scroll Bar Customization */
-    #result::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    #result::-webkit-scrollbar-thumb {
-      background: linear-gradient(45deg, #3498db, #2980b9);
-      border-radius: 4px;
+    .pane-content ul {
+      margin: 0;
+      padding-left: 16px;
     }
 
-    #result::-webkit-scrollbar-track {
-      background-color: #ecf0f1;
-      border-radius: 4px;
+    .pane-content li {
+      margin-bottom: 5px;
+    }
+
+    .action-row {
+      margin-top: 8px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-action {
+      background: var(--pastel-green);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-action:hover {
+      background: var(--pastel-green-hover);
+    }
+
+    /* Hidden Radio Button inputs */
+    #hiddenInputs {
+      display: none;
     }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>🎬 MP3by4</h1>
-    <p class="subtitle">Convert web pages to narrated videos</p>
+    <p>Convert webpage to sitcom-narrated video</p>
   </div>
-  
-  <button id="extractBtn">
-    <span id="btnText">🚀 Convert to Video</span>
-    <span id="btnLoading" class="loading" style="display: none;"></span>
+
+  <!-- Character Pills Selector -->
+  <div class="section-label">Sitcom Narrator</div>
+  <div class="character-row">
+    <div class="character-pill selected" id="pillRachel">
+      <span class="avatar">👩</span>
+      <span>Rachel Green</span>
+    </div>
+    <div class="character-pill" id="pillSheldon">
+      <span class="avatar">🤖</span>
+      <span>Sheldon Cooper</span>
+    </div>
+    <div class="character-pill" id="pillMichael">
+      <span class="avatar">📺</span>
+      <span>Michael Scott</span>
+    </div>
+  </div>
+
+  <!-- hidden radio fields for easy js access -->
+  <div id="hiddenInputs">
+    <input type="radio" name="character" value="girl" id="charRachel" checked>
+    <input type="radio" name="character" value="robot" id="charSheldon">
+    <input type="radio" name="character" value="news_anchor" id="charMichael">
+  </div>
+
+  <!-- Option Dropdown -->
+  <div class="options-grid">
+    <label for="summaryLength">Detail Level:</label>
+    <select id="summaryLength">
+      <option value="short">Short & Sweet</option>
+      <option value="medium" selected>Standard Brief</option>
+      <option value="long">Detailed Notes</option>
+    </select>
+  </div>
+
+  <!-- Convert Button -->
+  <button id="extractBtn" class="btn-convert">
+    <span id="btnText">Convert Webpage to Video 🚀</span>
+    <span id="btnLoading" class="loading-spinner" style="display: none;"></span>
   </button>
-  
-  <div id="result"></div>
+
+  <!-- Status Box -->
+  <div id="statusBox" class="status-container"></div>
+
+  <!-- Tabbed Result Box -->
+  <div id="resultBox" class="result-container">
+    <div class="tab-bar">
+      <button class="tab-btn active" id="btnTabVideo">🎬 Video</button>
+      <button class="tab-btn" id="btnTabNotes">📝 Notes</button>
+      <button class="tab-btn" id="btnTabScript">💬 Script</button>
+    </div>
+
+    <!-- Video Tab -->
+    <div class="tab-pane active" id="paneVideo">
+      <div class="video-wrapper" id="videoContainer">
+        <!-- Video element will be loaded here dynamically -->
+      </div>
+    </div>
+
+    <!-- Notes Tab -->
+    <div class="tab-pane" id="paneNotes">
+      <div class="pane-content" id="notesContent"></div>
+      <div class="action-row">
+        <button class="btn-action" id="copyNotesBtn">Copy Notes 📋</button>
+      </div>
+    </div>
+
+    <!-- Script Tab -->
+    <div class="tab-pane" id="paneScript">
+      <div class="pane-content" id="scriptContent" style="background:#f7f7f7; padding:8px; border-radius:6px; font-family:monospace;"></div>
+    </div>
+  </div>
 
   <script src="robust_popup.js"></script>
 </body>

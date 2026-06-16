@@ -1,193 +1,129 @@
-# 🎬 MP3by4 - Web to Video Converter Chrome Extension
+# 🎬 MP3by4 — Web-to-Video Sitcom Summarizer
 
-A Chrome extension that converts web pages into narrated videos with AI-generated summaries, text-to-speech, and animated avatar videos.
+A gorgeous, pastel-themed promotional platform and **Chrome Extension (Manifest V3)** that scrapes any webpage and converts it into a sitcom-style narrated video summary with lip-synced character animations and ready-made sticky notes.
 
-## ✨ Features
+> [!NOTE]
+> **Developed with 💜 by preetika**
+> Converting dry webpage content into engaging, sitcom-style summaries read by your favorite sitcom stars!
 
-- **Web Content Extraction**: Automatically extracts meaningful text from any webpage
-- **AI Summarization**: Uses Google Gemini AI to generate engaging 4-sentence summaries
-- **Text-to-Speech**: Converts summaries to natural-sounding MP3 audio using gTTS
-- **Animated Video Generation**: Creates videos with animated avatar, text overlays, and synchronized audio
-- **Real-time Processing**: Live content processing and video generation
-- **Modern UI**: Beautiful gradient interface with smooth animations
+---
 
-## 🚀 Quick Start
+## 🎨 Sitcom Narrator Cast
+
+Our extension features three beloved sitcom stars, complete with custom-designed vector cartoon avatars, character-specific dialogue styles, and localized voice accents:
+
+| Star | Sitcom Franchise | Style / Persona | Voice Profile |
+| :--- | :--- | :--- | :--- |
+| **👩 Rachel Green** | *Friends* | Gossipy, enthusiastic, and style-centered. | Standard US English Accent |
+| **🤖 Sheldon Cooper** | *Big Bang Theory* | Ultra-logical, academic, and highly pedantic. | Formal British English Accent |
+| **📺 Michael Scott** | *The Office* | Dramatic, highly energetic, and chaotic. | Energetic Canadian Accent |
+
+---
+
+## ✨ Core Features
+
+* **🕸️ Server-Side Web Scraping:** Instantly fetches and sanitizes text content from any target URL to bypass client-side CORS blocks.
+* **🧠 Sitcom-Persona AI Summarization:** Integrates with the Google Gemini API to write engaging scripts and structured bullet notes mimicking sitcom personalities.
+* **🎙️ Localized TTS Voice Accent Engine:** Maps each narrator to a distinct regional Google Translation TTS voice endpoint to give Sheldon, Rachel, and Michael unique voice signatures.
+* **📹 Audio-Reactive Lip-Synced Video Rendering:** A custom pipeline written in OpenCV and MoviePy that analyzes voice amplitudes to dynamically animate mouth open/closed states.
+* **📺 Retro TV Showcase & Corkboard UI:** Web playground displays videos in a retro wooden television mockup and pins takeaway summaries on a digital corkboard sticky note container.
+* **🔌 Compact Tabbed Chrome Extension:** Re-engineered for Manifest V3 compliance with dynamic event bindings, clean layout, and user-adjustable detail lengths (*Short & Sweet*, *Standard Brief*, *Detailed Notes*).
+* **⚡ 100% Resilient Uptime Fallback:** Automatically switches into *Heuristic Fallback Mode* on API key limits, using local text parsing and injecting sitcom phrases directly.
+
+---
+
+## 🚀 Quick Start Guide
 
 ### Prerequisites
-- Python 3.8+ (Python 3.13 recommended)
-- Chrome or Edge browser
-- Google Gemini API key (free from [Google AI Studio](https://makersuite.google.com/app/apikey))
+* **Python 3.8+** (Python 3.12 / 3.13 recommended)
+* **Google Chrome** browser
+* *Optional:* Google Gemini API Key (saves to `simple_working_server.py`)
 
-### Installation
+### 1. Installation & Setup
+Run the pre-made batch script on Windows to automatically configure the virtual environment and install dependencies:
+```cmd
+setup.bat
+```
 
-1. **Clone or download this repository**
+> [!TIP]
+> If you prefer manual commands in Command Prompt:
+> ```cmd
+> python -m venv .venv
+> call .venv\Scripts\activate.bat
+> python -m pip install --upgrade pip
+> pip install -r mp3by4/requirements.txt
+> ```
 
-2. **Set up Python virtual environment** (recommended):
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate  # Windows
-   # or: source .venv/bin/activate  # Mac/Linux
-   ```
+### 2. Start the Server
+Start the Flask backend server locally on port 8080:
+```cmd
+start_server.bat
+```
 
-3. **Install Python dependencies**:
-   ```bash
-   cd mp3by4
-   pip install -r requirements.txt
-   ```
+> [!IMPORTANT]
+> The server automatically detects if a default or placeholder API key is configured. If so, it boots into **Heuristic Fallback Mode** instantly, using local sentence parsers to generate localized sitcom scripts offline.
 
-   **Note**: If you encounter NumPy compatibility issues with Python 3.13, the requirements.txt already specifies compatible versions.
+### 3. Load the Chrome Extension
+1. Open Chrome and navigate to `chrome://extensions/`.
+2. Toggle **Developer mode** in the top-right corner.
+3. Click the **Load unpacked** button in the top-left corner.
+4. Select the `extension/` directory inside this repository.
 
-4. **Configure Gemini API Key**:
-   
-   Edit `mp3by4/simple_working_server.py` and replace the `GEMINI_KEY` value (line 15) with your API key:
-   ```python
-   GEMINI_KEY = "your_api_key_here"
-   ```
+---
 
-5. **Start the server**:
-   ```bash
-   cd mp3by4
-   python simple_working_server.py
-   ```
-   
-   Server will run on: `http://127.0.0.1:8080`
+## 💻 Web Workspace Demo
+Once your local server is running, open your browser and navigate to:
+```text
+http://127.0.0.1:8080/
+```
+Paste a URL or raw text in the workspace, select Rachel, Sheldon, or Michael, and click **Generate Summary** to see the system in action!
 
-6. **Load the Chrome Extension**:
-   - Open Chrome/Edge and navigate to `chrome://extensions/` (or `edge://extensions/`)
-   - Enable **"Developer mode"** (toggle in top-right)
-   - Click **"Load unpacked"**
-   - Select the `extension` folder from this project
-
-### Usage
-
-1. Navigate to any webpage you want to convert
-2. Click the **MP3by4** extension icon in your browser toolbar
-3. Click **"🚀 Convert to Video"**
-4. Wait for processing (summary generation → audio creation → video rendering)
-5. Watch your generated video with AI narration!
+---
 
 ## 📁 Project Structure
 
-```
+```text
 mp3by4/
-├── extension/                    # Chrome Extension
-│   ├── popup.html               # Main popup interface
-│   ├── robust_popup.js          # Extension logic and API calls
-│   ├── background.js            # Background service worker
-│   ├── manifest.json            # Extension configuration (Manifest V3)
-│   └── icons/                   # Extension icons
+├── extension/                     # Chrome Extension (Manifest V3)
+│   ├── popup.html                # Redesigned compact pastel UI
+│   ├── robust_popup.js           # dynamic event bindings & API requests
+│   ├── background.js             # Service worker script
+│   ├── manifest.json             # Extension permissions & assets
+│   └── icons/                    # App icon files
 │
-├── mp3by4/                      # Python Backend
-│   ├── simple_working_server.py # Main Flask server (port 8080)
-│   ├── requirements.txt        # Python dependencies
-│   └── static/                 # Generated videos and audio files
+├── mp3by4/                       # Python Backend Server
+│   ├── assets/                   # Character image directories
+│   │   ├── girl/                 # Rachel Green sprites (open/closed mouth)
+│   │   ├── robot/                # Sheldon Cooper sprites
+│   │   └── news_anchor/          # Michael Scott sprites
+│   ├── static/                   # Output directory for video & audio streaming
+│   │   └── index.html            # Premium glassmorphism landing page
+│   ├── simple_working_server.py  # Flask server (CORS-ready, TTS accents, OpenCV renderer)
+│   └── requirements.txt         # Project libraries (OpenCV, MoviePy, Flask, etc.)
 │
-├── start_server.bat            # Windows script to start server
-├── setup.bat                   # Windows setup script
-└── README.md                   # This file
+├── start_server.bat             # Convenience server launcher
+├── setup.bat                    # Dependency auto-setup script
+└── README.md                    # This documentation file
 ```
 
-## 🛠️ Technologies Used
+---
 
-### Frontend (Chrome Extension)
-- **HTML5/CSS3**: Modern, responsive popup interface with gradient backgrounds
-- **JavaScript (ES6+)**: 
-  - Chrome Extension APIs (Manifest V3)
-  - Content script injection for text extraction
-  - Fetch API for server communication
-- **Chrome Extension Manifest V3**: Modern extension architecture
+## 🛠️ System Architecture
 
-### Backend (Python Server)
-- **Flask**: Lightweight web framework for API endpoints
-- **Flask-CORS**: Cross-origin resource sharing
-- **Google Gemini AI**: AI model for text summarization
-- **gTTS (Google Text-to-Speech)**: Text-to-speech conversion
-- **OpenCV**: Video generation with animated avatar
-- **MoviePy**: Video editing and audio synchronization
-- **NumPy**: Numerical operations for video processing
-
-## 🔧 API Endpoints
-
-### `POST /process`
-Processes webpage content and generates video.
-
-**Request:**
-```json
-{
-  "content": "extracted webpage text",
-  "url": "https://example.com"
-}
+```mermaid
+graph TD
+    A[Webpage / Client Input] -->|Active Tab URL / Scraped Text| B(Chrome Extension V3 / HTML Playground)
+    B -->|POST /process JSON| C[Flask LOCAL Server :8080]
+    C -->|Fetch HTML| D{Scraper Engine}
+    D -->|Sanitized Text| E{Gemini API / Heuristic Fallback}
+    E -->|Summary Script & Notes| F[gTTS Localized Accents]
+    F -->|Synthesized MP3 Voice| G[OpenCV Sprite Animator]
+    G -->|Mouth Animations & Subtitle Overlay| H[MoviePy Audio+Video Multiplexer]
+    H -->|Final MP4 Stream| B
 ```
 
-**Response:**
-```json
-{
-  "status": "success",
-  "script": "AI-generated summary script",
-  "video_url": "http://127.0.0.1:8080/static/video_1234567890.mp4",
-  "audio_url": "http://127.0.0.1:8080/static/narration_1234567890.mp3"
-}
-```
-
-### `GET /static/<filename>`
-Serves generated video and audio files.
-
-## 🎨 Video Generation Details
-
-The video generation pipeline:
-
-1. **Text Extraction**: Extracts main content from webpage (paragraphs, headers)
-2. **AI Summarization**: Uses Gemini AI to create a 4-sentence engaging summary
-3. **Audio Generation**: Converts summary to MP3 using gTTS
-4. **Video Creation**: 
-   - Creates animated avatar (blinking eyes, talking mouth)
-   - Adds text overlay at bottom
-   - Synchronizes audio with video
-   - Outputs MP4 file with H.264 codec
-
-## ⚙️ Configuration
-
-### Server Configuration
-Edit `mp3by4/simple_working_server.py`:
-- `GEMINI_KEY`: Your Google Gemini API key
-- `PORT`: Server port (default: 8080)
-
-### Extension Configuration
-Edit `extension/manifest.json`:
-- `host_permissions`: Server URLs (default: `http://localhost:8080/*`)
-
-## 🐛 Troubleshooting
-
-### Server won't start
-- **NumPy/OpenCV errors**: Make sure you're using compatible versions. For Python 3.13, use `opencv-python-headless` or latest `opencv-python`.
-- **Missing modules**: Run `pip install -r mp3by4/requirements.txt`
-
-### Extension can't connect to server
-- Make sure the server is running on port 8080
-- Check that `host_permissions` in `manifest.json` includes your server URL
-- Try using `127.0.0.1` instead of `localhost`
-
-### Video generation fails
-- Check server console for error messages
-- Ensure audio file was generated successfully
-- Verify OpenCV is installed correctly: `python -c "import cv2; print(cv2.__version__)"`
-
-### Gemini API errors
-- Verify your API key is correct
-- Check your API quota/limits
-- The server will fall back to simple text truncation if Gemini fails
+---
 
 ## 📝 License
-
-This project is open source and available under the MIT License.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
-
-## 🙏 Acknowledgments
-
-- Google Gemini AI for text summarization
-- OpenCV for video processing
-- MoviePy for video editing
-- gTTS for text-to-speech
+This project is open-source and released under the **MIT License**.
+All fictional characters, names, and quotes are used as parody/tribute references.
