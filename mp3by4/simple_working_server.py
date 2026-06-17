@@ -774,5 +774,6 @@ def serve_static(filename):
         return send_from_directory(STATIC_DIR, filename)
 
 if __name__ == '__main__':
-    print("Debug Server running on http://127.0.0.1:8080")
-    app.run(port=8080, debug=False)
+    port = int(os.environ.get("PORT", 8080))
+    print(f"Server running on port {port}")
+    app.run(host='0.0.0.0', port=port, debug=False)

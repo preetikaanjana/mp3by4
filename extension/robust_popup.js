@@ -1,3 +1,6 @@
+// Change this to your deployed backend URL (e.g. "https://preetika-mp3by4.onrender.com")
+const SERVER_URL = "http://127.0.0.1:8080";
+
 document.addEventListener('DOMContentLoaded', () => {
     const extractBtn = document.getElementById("extractBtn");
     const btnText = document.getElementById("btnText");
@@ -131,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addStatus(`🎭 Sending to ${charLabel}...`, "info");
 
             // 4. Fire POST request to Flask Backend
-            const response = await fetch('http://127.0.0.1:8080/process', {
+            const response = await fetch(`${SERVER_URL}/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
