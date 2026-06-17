@@ -3,7 +3,7 @@
 A gorgeous, pastel-themed promotional platform and **Chrome Extension (Manifest V3)** that scrapes any webpage and converts it into a sitcom-style narrated video summary with lip-synced character animations and ready-made sticky notes.
 
 > [!NOTE]
-> **Developed with 💜 by Preetika P.**
+> **Developed with 💜 by Preetika**
 > Converting dry webpage content into engaging, sitcom-style summaries read by your favorite sitcom stars!
 
 ---
