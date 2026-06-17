@@ -1,5 +1,4 @@
-// Change this to your deployed backend URL (e.g. "https://preetika-mp3by4.onrender.com")
-const SERVER_URL = "https://mp3by4-backend.onrender.com"; // If using Render
+const SERVER_URL = "https://mp3by4.onrender.com";
 
 document.addEventListener('DOMContentLoaded', () => {
     const extractBtn = document.getElementById("extractBtn");
